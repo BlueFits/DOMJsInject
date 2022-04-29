@@ -3,7 +3,7 @@
   "displayName": "Dom JS Inject",
   "publisher": "ChristianRojas",
   "description": "Inject code to webpages to see the changes made in real time",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.66.0"
   },
