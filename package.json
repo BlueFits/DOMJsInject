@@ -4,6 +4,10 @@
   "publisher": "ChristianRojas",
   "description": "Inject code to webpages to see the changes made in real time",
   "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "github.com/BlueFits/DOMJsInject"
+  },
   "engines": {
     "vscode": "^1.66.0"
   },
