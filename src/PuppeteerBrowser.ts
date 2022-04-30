@@ -34,7 +34,7 @@ export default class PuppeteerBrowser {
 		//Event Listeners
 		browser.on("targetcreated", async (target: any)=>{
 			const page:any = await target.page();
-			if(page) {page.close()};
+			if(page) {page.close();};
 		 });
 
 		 browser.on("disconnected", async () => {

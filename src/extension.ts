@@ -18,7 +18,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(vscode.commands.registerCommand(DOM_LAUNCH, async() => {
 		let url = await vscode.window.showInputBox({prompt: 'Url', placeHolder: 'Url'});
-		if (!url) {throw new Error("cancelled");} else if (!Validator.isURL(url)) {throw new Error("Not a valid url")};
+		if (!url) {throw new Error("cancelled");} else if (!Validator.isURL(url)) {throw new Error("Not a valid url");};
 		browserInstance = await PuppeteerBrowser.build(url, { onSaveCleaner });
 		await browserInstance.start();
 	}));
