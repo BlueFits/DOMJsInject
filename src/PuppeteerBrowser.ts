@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { readHTML, getPathToChrome } from "./utils";
+import { readHTML, getPathToChrome, existsSync } from "./utils";
 
 const fs = require("fs");
 const pupeteer = require("puppeteer");
@@ -18,6 +18,11 @@ export default class PuppeteerBrowser {
 	static async build(url: string) {
 		const settings = vscode.workspace.getConfiguration('vscode-devtools-for-chrome');
         const pathToChrome = settings.get('chromePath') as string || getPathToChrome();
+
+		if (!pathToChrome || existsSync(pathToChrome)) {
+            vscode.window.showErrorMessage('Chrome was not found. Chrome must be installed for this extension to function. If you have Chrome installed at a custom location you can specify it in the \'chromePath\' setting.');
+            return;
+        }
 
         let browser = await pupeteer.launch({
 			executablePath: pathToChrome,
