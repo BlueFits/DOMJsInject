@@ -1,4 +1,5 @@
 // const cheerio = require('cheerio');
+import * as vscode from 'vscode';
 import * as cheerio from "cheerio";
 import * as os from 'os';
 import * as path from 'path';
@@ -60,3 +61,12 @@ export const readHTML = (html: string) => {
         styleTxt: $("style").html(),
     };
 };
+
+export const readFile = async (filePath: any): Promise<string | undefined> => {
+    if(!filePath) {
+        vscode.window.showErrorMessage("YOUR-EXTENSION: Working folder not found, open a folder an try again");
+    } else {
+        let file: string = await fs.readFileSync(filePath).toString();
+        return file;
+    }
+}; 
