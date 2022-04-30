@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { readHTML } from "./utils";
+import { readHTML, getPathToChrome } from "./utils";
 
 const fs = require("fs");
 const pupeteer = require("puppeteer");
@@ -16,8 +16,11 @@ export default class PuppeteerBrowser {
     }
 
 	static async build(url: string) {
+		const settings = vscode.workspace.getConfiguration('vscode-devtools-for-chrome');
+        const pathToChrome = settings.get('chromePath') as string || getPathToChrome();
+
         let browser = await pupeteer.launch({
-			executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe",
+			executablePath: pathToChrome,
 			headless: false,
 			devtools: true,
 			defaultViewport: null,
