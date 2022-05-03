@@ -30,16 +30,10 @@ export async function activate(context: vscode.ExtensionContext) {
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand(GEN_PERS_TEMPLATE, async () => {
-		let path = await readFilePath();
 		let templateRender: any = null;
-
 		const selection = await vscode.window.showQuickPick(menu, { matchOnDetail: true });
-
-		// let fileName = await vscode.window.showInputBox({prompt: 'Please enter the file name e.g. a.html', placeHolder: 'File name'});
-		// if (!fileName) {throw new Error("cancelled");};
 		let persNum = await vscode.window.showInputBox({prompt: 'Please enter story number', placeHolder: 'story number'});
 		if (!persNum) {throw new Error("cancelled");};
-
 		switch (selection?.label) {
 			case VANILLA_TEMPLATE:
 				templateRender = await vanillaTemplateGen(persNum);
@@ -48,8 +42,7 @@ export async function activate(context: vscode.ExtensionContext) {
 				templateRender = await es6TemplateGen(persNum);
 				break;
 		}
-
-		fs.writeFile(path, templateRender, (err: any) => {throw new Error(err);});
+		fs.writeFile(await readFilePath(), templateRender, (err: any) => {throw new Error(err);});
 		vscode.window.showInformationMessage(`Succesfully created generated template`);
 	}));
 }

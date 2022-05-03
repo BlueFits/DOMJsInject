@@ -1,28 +1,13 @@
+export default `
 <style>
-    #main {
-        opacity: 0;
-    }
+
 </style>
 
 <script>
     window.persDOM_INJECT_SCRIPTChangesApplied = false;
 
-    const PERS_STORY = "pers-DOM_INJECT_SCRIPT";
-
-    const persDOM_INJECT_SCRIPTChangesToApply = async () => {
+    function persDOM_INJECT_SCRIPTChangesToApply() {
         
-        const tryCatch = (fun, block) => {
-            try {fun();} catch (err) {console.error(PERS_STORY + ' error in ' + block + ': ' + err);}
-        }
-
-        const siteDefaults = new Promise ((res) => {
-            tryCatch(() => {
-                $("#main").css("opacity", "1");
-            }, "siteDefaults")
-            res();
-        });
-
-        await siteDefaults;
     }
 
     window.addEventListener("load", function () {
@@ -31,9 +16,11 @@
             persDOM_INJECT_SCRIPTChangesToApply();
         }
     });
+    // In case the window is already loaded, apply the changes here
 
     if (!window.persDOM_INJECT_SCRIPTChangesApplied && document.readyState === "complete") {
         window.persDOM_INJECT_SCRIPTChangesApplied = true;
         persDOM_INJECT_SCRIPTChangesToApply();
     }
 </script>
+`;
