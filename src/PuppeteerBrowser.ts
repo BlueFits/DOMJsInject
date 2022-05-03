@@ -13,7 +13,7 @@ export default class PuppeteerBrowser {
 			this.page = page;
 			this.currentlyOpenTabfilePath = currentlyOpenTabfilePath;
 		}
-    }
+    };
 
 	static async build(url: string, { onSaveCleaner }: any) {
 		const settings = vscode.workspace.getConfiguration('vscode-devtools-for-chrome');
@@ -23,7 +23,7 @@ export default class PuppeteerBrowser {
 		if (!pathToChrome || !existsSync(pathToChrome)) {
             vscode.window.showErrorMessage('Chrome was not  found. Chrome must be installed for this extension to function. If you have Chrome installed at a custom location you can specify it in the \'chromePath\' setting.');
             return;
-        }
+        };
 
         let browser = await pupeteer.launch({
 			executablePath: pathToChrome,
@@ -32,7 +32,7 @@ export default class PuppeteerBrowser {
 			defaultViewport: null,
 		});
 		//Event Listeners
-		browser.on("targetcreated", async (target: any)=>{
+		browser.on("targetcreated", async (target: any)=>{ 
 			const page:any = await target.page();
 			if(page) {page.close();};
 		 });
@@ -47,15 +47,15 @@ export default class PuppeteerBrowser {
 		await page.goto(url, { waitUntil: 'load' });
 
         return new PuppeteerBrowser(page, currentlyOpenTabfilePath);
-    }
+    };
 
 	public getFilePath(): string {
 		return this.currentlyOpenTabfilePath;
-	}
+	};
 
 	public async start() {
 		await this.render();
-	}
+	};
 
 	public async render() {
 		//Read the file
@@ -75,9 +75,9 @@ export default class PuppeteerBrowser {
 		await this.page.$eval("#inject_style_id", (elem: any, styleTxt: string) => elem.innerHTML = styleTxt , styleTxt);
 		await this.page.$eval("#inject_script_id", (elem: any, scriptTxt: string) => elem.innerHTML = scriptTxt , scriptTxt);
 		await this.page.$eval("head", () => console.log('%c $$$JS_INJECT: Changes are live', 'background: #222; color: #bada55'));
-	}
+	};
 
 	public async reloadTab () {
 		await this.page.reload({ waitUntil: 'load' });
-	}
+	};
 }
