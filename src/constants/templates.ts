@@ -56,23 +56,23 @@ export default {
 </style>
 
 <script>
-    window.persDOM_INJECT_SCRIPTChangesApplied = false;
+    window.pers${persNum}ChangesApplied = false;
 
-    function persDOM_INJECT_SCRIPTChangesToApply() {
+    function pers${persNum}ChangesToApply() {
         
     }
 
     window.addEventListener("load", function () {
-        if (!window.persDOM_INJECT_SCRIPTChangesApplied) {
-            window.persDOM_INJECT_SCRIPTChangesApplied = true;
-            persDOM_INJECT_SCRIPTChangesToApply();
+        if (!window.pers${persNum}ChangesApplied) {
+            window.pers${persNum}ChangesApplied = true;
+            pers${persNum}ChangesToApply();
         }
     });
     // In case the window is already loaded, apply the changes here
 
-    if (!window.persDOM_INJECT_SCRIPTChangesApplied && document.readyState === "complete") {
-        window.persDOM_INJECT_SCRIPTChangesApplied = true;
-        persDOM_INJECT_SCRIPTChangesToApply();
+    if (!window.pers${persNum}ChangesApplied && document.readyState === "complete") {
+        window.pers${persNum}ChangesApplied = true;
+        pers${persNum}ChangesToApply();
     }
 </script>
         `;
