@@ -15,7 +15,8 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:dom-js-inject.launch"
+    "onCommand:dom-js-inject.launch",
+    "onCommand:dom-js-inject.gen_pers_template"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -23,6 +24,10 @@
       {
         "command": "dom-js-inject.launch",
         "title": "Launch JS Inject"
+      },
+      {
+        "command": "dom-js-inject.gen_pers_template",
+        "title": "Generate PERS Template"
       }
     ]
   },

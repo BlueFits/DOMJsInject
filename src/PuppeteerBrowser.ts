@@ -38,7 +38,6 @@ export default class PuppeteerBrowser {
 		 });
 
 		 browser.on("disconnected", async () => {
-			 console.log("browser disconnected");
 			 onSaveCleaner.dispose();
 		 });
 		//Target first tab

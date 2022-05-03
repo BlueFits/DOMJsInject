@@ -70,3 +70,8 @@ export const readFile = async (filePath: any): Promise<string | undefined> => {
         return file;
     }
 }; 
+
+export const readFilePath = async () => {
+    let path:any = vscode.workspace.workspaceFolders !== undefined ? await vscode.window.activeTextEditor?.document.uri.fsPath : null;
+    if (!path) {throw new Error("Must have an active window");} else {return path;}
+};
