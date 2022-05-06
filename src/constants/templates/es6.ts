@@ -13,7 +13,7 @@ export default `
     const persDOM_INJECT_SCRIPTChangesToApply = async () => {
         
         const tryCatch = (fun, block) => {
-            try {fun();} catch (err) {console.error(PERS_STORY + ' error in ' + block + ': ' + err);}
+            try {fun();} catch (err) {console.trace('%c ' + PERS_STORY + ' error in ' + block + ': ' + err, 'background: #222; color: #AD7150');}
         }
 
         const siteDefaults = new Promise ((res) => {
