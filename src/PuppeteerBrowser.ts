@@ -62,13 +62,13 @@ export default class PuppeteerBrowser {
 		//Parse the html
 		let { scriptWithSrc, scriptTxt, styleTxt, linkTags }: any = readHTML(file);
 
-		if (scriptWithSrc.length > 0) {
-			await this.page.$eval("head", () => console.log('%c $$$JS_INJECT: Loading Additional Script Tags', 'background: #222; color: #bada55'));
-			this.createAsyncTag(scriptWithSrc, "src", "script");
-		}
 		if (linkTags.length > 0) {
 			await this.page.$eval("head", () => console.log('%c $$$JS_INJECT: Loading Additional Link Tags', 'background: #222; color: #bada55'));
 			this.createAsyncTag(linkTags, "href", "link");
+		}
+		if (scriptWithSrc.length > 0) {
+			await this.page.$eval("head", () => console.log('%c $$$JS_INJECT: Loading Additional Script Tags', 'background: #222; color: #bada55'));
+			this.createAsyncTag(scriptWithSrc, "src", "script");
 		}
 		if (linkTags.length > 0 || scriptWithSrc.length > 0) {
 			// await this.page.waitForNavigation();
@@ -97,6 +97,12 @@ export default class PuppeteerBrowser {
 			for (let val of tag) {
 				let createdTag: any = document.createElement(block);
 				if (val.id) {createdTag.id = val.id;};
+				if (block === "link") { 
+					createdTag.rel = "stylesheet"; 
+					createdTag.type = 'text/css'; 
+				} else if (block === "script") {
+					createdTag.type = "text/javascript";
+				}
 				createdTag[prop] = val[prop];
 				elem.appendChild(createdTag);
 			}
