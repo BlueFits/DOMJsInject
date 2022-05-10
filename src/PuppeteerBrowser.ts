@@ -60,27 +60,47 @@ export default class PuppeteerBrowser {
 		//Read the file
 		let file: any = await readFile(this.currentlyOpenTabfilePath);
 		//Parse the html
-		let { scriptWithSrc, scriptTxt, styleTxt }: any = readHTML(file);
-
-		await this.page.$eval("head", (elem: any, scriptWithSrc: any) => { 
-			//Insert scripts if there is
-			if (scriptWithSrc.length > 0) { 
+		let { scriptWithSrc, scriptTxt, styleTxt, linkTags }: any = readHTML(file);
+		if (scriptWithSrc.length > 0) {
+			await this.page.$eval("head", () => console.log('%c $$$JS_INJECT: Loading Additional Script Tags', 'background: #222; color: #bada55'));
+			await this.page.$eval("head", (elem: any, scriptWithSrc: any) => {
 				for (let val of scriptWithSrc) {
-					let scripSrc = document.createElement("script");
-					scripSrc.src = val;
-					elem.appendChild(scripSrc);
+					let scriptSrc = document.createElement("script");
+					if (val.id) {scriptSrc.id = val.id;};
+					scriptSrc.src = val.src;
+					elem.appendChild(scriptSrc);
 				}
-			}
+			}, scriptWithSrc);
+			if (scriptWithSrc[scriptWithSrc.length - 1]) {await this.page.waitForSelector(`#${scriptWithSrc[scriptWithSrc.length - 1].id}`);};
+		}
+		if (linkTags.length > 0) {
+			console.log(Boolean(linkTags[linkTags.length - 1].id));
+			await this.page.$eval("head", () => console.log('%c $$$JS_INJECT: Loading Additional Link Tags', 'background: #222; color: #bada55'));
+			await this.page.$eval("head", (elem: any, linkTags: any) => {
+				for (let val of linkTags) {
+					let linkTag = document.createElement("link");
+					if (val.id) {linkTag.id = val.id;};
+					linkTag.href = val.href;
+					elem.appendChild(linkTag);
+				}
+			}, linkTags);
+			if (linkTags[linkTags.length - 1].id) {await this.page.waitForSelector(`#${linkTags[linkTags.length - 1].id}`);};
+		}
+		if (linkTags.length > 0 || scriptWithSrc.length > 0) {
+			// await this.page.waitForNavigation();
+			await this.page.waitForTimeout(1000);
+		}
+		await this.page.$eval("head", (elem: any, scriptTxt: any, styleTxt: any) => { 
 			let script = document.createElement("script");
 			let style = document.createElement("style");
+			style.id = "inject_style_id";
+			style.innerHTML = styleTxt;
 			script.id="inject_script_id";
-			style.id="inject_style_id";
-			script.type = "text/javascript";			
+			script.type = "text/javascript";	
+			script.text = scriptTxt;
 			elem.appendChild(style);
 			elem.appendChild(script);
-		}, scriptWithSrc);
-		await this.page.$eval("#inject_style_id", (elem: any, styleTxt: string) => elem.innerHTML = styleTxt , styleTxt);
-		await this.page.$eval("#inject_script_id", (elem: any, scriptTxt: string) => elem.innerHTML = scriptTxt , scriptTxt);
+		}, scriptTxt, styleTxt);
 		await this.page.$eval("head", () => console.log('%c $$$JS_INJECT: Changes are live', 'background: #222; color: #bada55'));
 	};
 
