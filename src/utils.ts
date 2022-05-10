@@ -56,8 +56,24 @@ export function getPathToChrome(): string {
 
 export const readHTML = (html: string) => {
     const $ = cheerio.load(html);
+    let scriptWithSrc:any = [];
+    let scriptTags = $("script");
+    let scriptTxt:string | null = null;
+    //read any script tags with srcs
+    for (let val of $("script[src]")) {
+        scriptWithSrc = [...scriptWithSrc, val.attribs.src];
+    }
+    //read the first script tag with a value
+    for (let i = 0; i < scriptTags.length; i++) {
+        if ($(scriptTags.get(i)).html()) {
+            scriptTxt = $(scriptTags.get(i)).html();
+            break;
+        }
+    }
+    // console.log(Boolean($($("script").get(1)).html()));
     return {
-        scriptTxt: $("script").html(),
+        scriptWithSrc,
+        scriptTxt,
         styleTxt: $("style").html(),
     };
 };

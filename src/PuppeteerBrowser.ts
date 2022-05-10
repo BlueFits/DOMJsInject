@@ -60,9 +60,17 @@ export default class PuppeteerBrowser {
 		//Read the file
 		let file: any = await readFile(this.currentlyOpenTabfilePath);
 		//Parse the html
-		let { scriptTxt, styleTxt }: any = readHTML(file);
+		let { scriptWithSrc, scriptTxt, styleTxt }: any = readHTML(file);
 
-		await this.page.$eval("head", (elem: any) => { 
+		await this.page.$eval("head", (elem: any, scriptWithSrc: any) => { 
+			//Insert scripts if there is
+			if (scriptWithSrc.length > 0) { 
+				for (let val of scriptWithSrc) {
+					let scripSrc = document.createElement("script");
+					scripSrc.src = val;
+					elem.appendChild(scripSrc);
+				}
+			}
 			let script = document.createElement("script");
 			let style = document.createElement("style");
 			script.id="inject_script_id";
@@ -70,7 +78,7 @@ export default class PuppeteerBrowser {
 			script.type = "text/javascript";			
 			elem.appendChild(style);
 			elem.appendChild(script);
-		});
+		}, scriptWithSrc);
 		await this.page.$eval("#inject_style_id", (elem: any, styleTxt: string) => elem.innerHTML = styleTxt , styleTxt);
 		await this.page.$eval("#inject_script_id", (elem: any, scriptTxt: string) => elem.innerHTML = scriptTxt , scriptTxt);
 		await this.page.$eval("head", () => console.log('%c $$$JS_INJECT: Changes are live', 'background: #222; color: #bada55'));
