@@ -61,30 +61,14 @@ export default class PuppeteerBrowser {
 		let file: any = await readFile(this.currentlyOpenTabfilePath);
 		//Parse the html
 		let { scriptWithSrc, scriptTxt, styleTxt, linkTags }: any = readHTML(file);
+
 		if (scriptWithSrc.length > 0) {
 			await this.page.$eval("head", () => console.log('%c $$$JS_INJECT: Loading Additional Script Tags', 'background: #222; color: #bada55'));
-			await this.page.$eval("head", (elem: any, scriptWithSrc: any) => {
-				for (let val of scriptWithSrc) {
-					let scriptSrc = document.createElement("script");
-					if (val.id) {scriptSrc.id = val.id;};
-					scriptSrc.src = val.src;
-					elem.appendChild(scriptSrc);
-				}
-			}, scriptWithSrc);
-			if (scriptWithSrc[scriptWithSrc.length - 1]) {await this.page.waitForSelector(`#${scriptWithSrc[scriptWithSrc.length - 1].id}`);};
+			this.createAsyncTag(scriptWithSrc, "src", "script");
 		}
 		if (linkTags.length > 0) {
-			console.log(Boolean(linkTags[linkTags.length - 1].id));
 			await this.page.$eval("head", () => console.log('%c $$$JS_INJECT: Loading Additional Link Tags', 'background: #222; color: #bada55'));
-			await this.page.$eval("head", (elem: any, linkTags: any) => {
-				for (let val of linkTags) {
-					let linkTag = document.createElement("link");
-					if (val.id) {linkTag.id = val.id;};
-					linkTag.href = val.href;
-					elem.appendChild(linkTag);
-				}
-			}, linkTags);
-			if (linkTags[linkTags.length - 1].id) {await this.page.waitForSelector(`#${linkTags[linkTags.length - 1].id}`);};
+			this.createAsyncTag(linkTags, "href", "link");
 		}
 		if (linkTags.length > 0 || scriptWithSrc.length > 0) {
 			// await this.page.waitForNavigation();
@@ -106,5 +90,17 @@ export default class PuppeteerBrowser {
 
 	public async reloadTab () {
 		await this.page.reload({ waitUntil: 'load' });
+	};
+	//Used in render to create network fetching scripts or links
+	public async createAsyncTag (tag: any, prop: string, block: string) {
+		await this.page.$eval("head", (elem: any, tag: any, prop: string, block: string) => {
+			for (let val of tag) {
+				let createdTag: any = document.createElement(block);
+				if (val.id) {createdTag.id = val.id;};
+				createdTag[prop] = val[prop];
+				elem.appendChild(createdTag);
+			}
+		}, tag, prop, block);
+		if (tag[tag.length - 1].id) {await this.page.waitForSelector(`#${tag[tag.length - 1].id}`)};
 	};
 }
