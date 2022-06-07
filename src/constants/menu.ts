@@ -1,5 +1,6 @@
-export const VANILLA_TEMPLATE = "Vanilla template";
+export const VANILLA_TEMPLATE = "Vanilla Template";
 export const ES6_TEMPLATE = "ES6 Template";
+export const PERS_COOKIE_TEMPLATE = "PERS Cookie Template";
 
 export const menu = [
     {
@@ -9,5 +10,9 @@ export const menu = [
     {
         label: ES6_TEMPLATE,
         detail: "Custom ES6 Template with promises and error handling"
+    },
+    {
+        label: PERS_COOKIE_TEMPLATE,
+        detail: "New pers cookie template"
     }
 ];

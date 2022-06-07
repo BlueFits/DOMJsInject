@@ -5,11 +5,11 @@ import * as fs from "fs";
 
 import commands from "./constants/commands";
 import templates from "./constants/templates";
-import { menu, ES6_TEMPLATE, VANILLA_TEMPLATE } from "./constants/menu";
+import { menu, ES6_TEMPLATE, VANILLA_TEMPLATE, PERS_COOKIE_TEMPLATE } from "./constants/menu";
 import { readFilePath } from "./utils";
 
 const { DOM_LAUNCH, GEN_PERS_TEMPLATE } = commands;
-const { es6TemplateGen, vanillaTemplateGen } = templates;
+const { es6TemplateGen, vanillaTemplateGen, persCookieTemplateGen } = templates;
 
 export async function activate(context: vscode.ExtensionContext) {
 
@@ -42,6 +42,8 @@ export async function activate(context: vscode.ExtensionContext) {
 			case ES6_TEMPLATE:
 				templateRender = await es6TemplateGen(persNum);
 				break;
+			case PERS_COOKIE_TEMPLATE:
+				templateRender = await persCookieTemplateGen(persNum);
 		}
 		fs.writeFile(await readFilePath(), templateRender, (err: any) => {throw new Error(err);});
 		vscode.window.showInformationMessage(`Succesfully created generated template`);
