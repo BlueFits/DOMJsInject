@@ -23,6 +23,9 @@ export async function activate(context: vscode.ExtensionContext) {
 	};
 
 	context.subscriptions.push(vscode.commands.registerCommand(DOM_LAUNCH, async () => {
+
+		//Read if storyDetails has website url already
+
 		let url = await vscode.window.showInputBox({prompt: 'Url', placeHolder: 'Url'});
 		if (!url) {throw new Error("cancelled");} else if (!Validator.isURL(url)) {throw new Error("Not a valid url");};
 		const onSaveCleaner = vscode.workspace.onDidSaveTextDocument(reloadAction);
