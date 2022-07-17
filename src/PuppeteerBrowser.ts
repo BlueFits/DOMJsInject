@@ -107,6 +107,6 @@ export default class PuppeteerBrowser {
 				elem.appendChild(createdTag);
 			}
 		}, tag, prop, block);
-		if (tag[tag.length - 1].id) {await this.page.waitForSelector(`#${tag[tag.length - 1].id}`)};
+		if (tag[tag.length - 1].id) {await this.page.waitForSelector(`#${tag[tag.length - 1].id}`);};
 	};
 }
