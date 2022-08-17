@@ -59,7 +59,7 @@ export const readHTML = (html: string) => {
     let scriptWithSrc:any = [];
     let linkTags:any = [];
     let scriptTags = $("script");
-    let scriptTxt:string | null = null;
+    let scriptTxt:any = null;
     for (let i = 0; i < scriptTags.length; i++) {
         if ($(scriptTags.get(i)).html()) {
             scriptTxt = $(scriptTags.get(i)).html();

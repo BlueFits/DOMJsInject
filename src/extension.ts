@@ -28,36 +28,47 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	//Commands
 	context.subscriptions.push(vscode.commands.registerCommand(GEN_CDB_FILES, async () => {
-		vscode.window.showInformationMessage("salutations my friend");
-
 		const currentlyOpenTabfilePath = await readFilePath();
 		const file: any = await readFile(currentlyOpenTabfilePath);
-		const { scriptTxt }: any = readHTML(file);
-		const scriptData = eval(scriptTxt);
+		const scriptData: any = eval(readHTML(file).scriptTxt);
 		const pathInfo =  parsePath(currentlyOpenTabfilePath);
 		const folderDir = `${pathInfo.dir}/${pathInfo.name}_files`;
 
-		if (!fs.existsSync(folderDir)) {fs.mkdirSync(folderDir)};
-
 		//Extract object props
 		for (let fileProp of scriptData) {
-
 			const prop:string[] = Object.keys(fileProp.var);
+			const directProp = Object.keys(fileProp.direct);
 			const $ = cheerio.load(file);
+			// const $original = cheerio.load(file);
 			$('script').remove();
+
+			let modifiedHTML:string | null = null;
 
 			for (const varProp of prop) {
 				let value = fileProp.var[varProp];
 				$(`[$var_${varProp}]`).html(value);
 				$(`[$var_${varProp}]`).removeAttr(`$var_${varProp}`);
-				let modifiedHTML = $.html();
-
-				//Deal with direct variables
-
-				//Generate each file into folder
-				fs.writeFileSync(`${folderDir}/${fileProp.name}.html`, modifiedHTML);
+				modifiedHTML = $.html();
 			}
 
+			for (const directPropName of directProp) {
+				let replace = "direct__" + directPropName;
+				let re = new RegExp(replace, "g");
+				modifiedHTML = modifiedHTML && modifiedHTML.replace(re, fileProp.direct[directPropName]);
+			}
+
+			//Compensate for cheerio bug 
+			modifiedHTML = modifiedHTML && modifiedHTML?.replace(/<head>/g, "");
+			modifiedHTML = modifiedHTML && modifiedHTML?.replace(/<\/head>/g, "");
+			modifiedHTML = modifiedHTML && modifiedHTML?.replace(/<html>/g, "");
+			modifiedHTML = modifiedHTML && modifiedHTML?.replace(/<\/html>/g, "");
+			modifiedHTML = modifiedHTML && modifiedHTML?.replace(/<body>/g, "");
+			modifiedHTML = modifiedHTML && modifiedHTML?.replace(/<\/body>/g, "");
+
+			if (!modifiedHTML) { console.log("Value is null"); return;};
+			if (!fs.existsSync(folderDir)) {fs.mkdirSync(folderDir);};
+			fs.writeFileSync(`${folderDir}/${fileProp.name}.html`, modifiedHTML);
+			vscode.window.showInformationMessage("Successfully generated files");
 		}
 	}));
 
