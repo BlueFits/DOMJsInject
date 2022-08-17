@@ -2,11 +2,12 @@ import * as vscode from 'vscode';
 import PuppeteerBrowser from './PuppeteerBrowser';
 import Validator from "validator";
 import * as fs from "fs";
+import * as cheerio from "cheerio";
 
 import commands from "./constants/commands";
 import templates from "./constants/templates";
 import { menu, ES6_TEMPLATE, VANILLA_TEMPLATE, PERS_COOKIE_TEMPLATE } from "./constants/menu";
-import { readFilePath } from "./utils";
+import { readFilePath, readFile, readHTML } from "./utils";
 
 const { DOM_LAUNCH, GEN_PERS_TEMPLATE, GEN_CDB_FILES } = commands;
 const { es6TemplateGen, vanillaTemplateGen, persCookieTemplateGen } = templates;
@@ -26,6 +27,19 @@ export async function activate(context: vscode.ExtensionContext) {
 	//Commands
 	context.subscriptions.push(vscode.commands.registerCommand(GEN_CDB_FILES, async () => {
 		vscode.window.showInformationMessage("salutations my friend");
+
+		const currentlyOpenTabfilePath = await readFilePath();
+		let file: any = await readFile(currentlyOpenTabfilePath);
+		//get script properties
+		let { scriptTxt }: any = readHTML(file);
+		console.log(scriptTxt);
+		
+		//get whole html file
+		const $ = cheerio.load(file);
+		$('script').remove();
+		let allHTML = $.html();
+		console.log(allHTML);
+
 
 		
 		// let url = await vscode.window.showInputBox({prompt: 'Url', placeHolder: 'Url'});

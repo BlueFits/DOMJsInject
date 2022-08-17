@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { readHTML, getPathToChrome, existsSync, readFile } from "./utils";
+import { readHTML, getPathToChrome, existsSync, readFile, readFilePath } from "./utils";
 import * as pupeteer from 'puppeteer';
 
 export default class PuppeteerBrowser {
@@ -18,7 +18,7 @@ export default class PuppeteerBrowser {
 	static async build(url: string, { onSaveCleaner }: any) {
 		const settings = vscode.workspace.getConfiguration('vscode-devtools-for-chrome');
         const pathToChrome = settings.get('chromePath') as string || getPathToChrome();
-		const currentlyOpenTabfilePath = vscode.workspace.workspaceFolders !== undefined ? await vscode.window.activeTextEditor?.document.uri.fsPath : null;
+		const currentlyOpenTabfilePath = await readFilePath();
 		
 		if (!pathToChrome || !existsSync(pathToChrome)) {
             vscode.window.showErrorMessage('Chrome was not  found. Chrome must be installed for this extension to function. If you have Chrome installed at a custom location you can specify it in the \'chromePath\' setting.');
