@@ -36,13 +36,15 @@ export async function activate(context: vscode.ExtensionContext) {
 
 		//Extract object props
 		for (let fileProp of scriptData) {
-			const prop:string[] = Object.keys(fileProp.var);
-			const directProp = Object.keys(fileProp.direct);
+			const prop:string[] = fileProp && fileProp.var && Object.keys(fileProp.var);
+			const directProp: string[] = fileProp && fileProp.direct && Object.keys(fileProp.direct);
 			const $ = cheerio.load(file);
 			// const $original = cheerio.load(file);
 			$('script').remove();
 
 			let modifiedHTML:string | null = null;
+
+			if (!prop) {throw new Error("Must have a var property in object file");}
 
 			for (const varProp of prop) {
 				let value = fileProp.var[varProp];
@@ -51,10 +53,12 @@ export async function activate(context: vscode.ExtensionContext) {
 				modifiedHTML = $.html();
 			}
 
-			for (const directPropName of directProp) {
-				let replace = "direct__" + directPropName;
-				let re = new RegExp(replace, "g");
-				modifiedHTML = modifiedHTML && modifiedHTML.replace(re, fileProp.direct[directPropName]);
+			if (directProp) {
+				for (const directPropName of directProp) {
+					let replace = "direct__" + directPropName;
+					let re = new RegExp(replace, "g");
+					modifiedHTML = modifiedHTML && modifiedHTML.replace(re, fileProp.direct[directPropName]);
+				}
 			}
 
 			//Compensate for cheerio bug 
