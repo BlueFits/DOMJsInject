@@ -65,8 +65,10 @@
     "webpack-cli": "^4.9.2"
   },
   "dependencies": {
+    "@types/parse-filepath": "^1.0.0",
     "@types/validator": "^13.7.2",
     "cheerio": "^1.0.0-rc.10",
+    "parse-filepath": "^1.0.2",
     "puppeteer": "^13.7.0",
     "validator": "^13.7.0"
   }

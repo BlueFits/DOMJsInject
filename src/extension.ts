@@ -3,11 +3,13 @@ import PuppeteerBrowser from './PuppeteerBrowser';
 import Validator from "validator";
 import * as fs from "fs";
 import * as cheerio from "cheerio";
+import * as parsePath from "parse-filepath";
+
 
 import commands from "./constants/commands";
 import templates from "./constants/templates";
 import { menu, ES6_TEMPLATE, VANILLA_TEMPLATE, PERS_COOKIE_TEMPLATE } from "./constants/menu";
-import { readFilePath, readFile, readHTML } from "./utils";
+import { readFilePath, readFile, readHTML, readFolderPath } from "./utils";
 
 const { DOM_LAUNCH, GEN_PERS_TEMPLATE, GEN_CDB_FILES } = commands;
 const { es6TemplateGen, vanillaTemplateGen, persCookieTemplateGen } = templates;
@@ -29,24 +31,34 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.window.showInformationMessage("salutations my friend");
 
 		const currentlyOpenTabfilePath = await readFilePath();
-		let file: any = await readFile(currentlyOpenTabfilePath);
-		//get script properties
-		let { scriptTxt }: any = readHTML(file);
-		console.log(scriptTxt);
-		
-		//get whole html file
-		const $ = cheerio.load(file);
-		$('script').remove();
-		let allHTML = $.html();
-		console.log(allHTML);
+		const file: any = await readFile(currentlyOpenTabfilePath);
+		const { scriptTxt }: any = readHTML(file);
+		const scriptData = eval(scriptTxt);
+		const pathInfo =  parsePath(currentlyOpenTabfilePath);
+		const folderDir = `${pathInfo.dir}/${pathInfo.name}_files`;
 
+		if (!fs.existsSync(folderDir)) {fs.mkdirSync(folderDir)};
 
-		
-		// let url = await vscode.window.showInputBox({prompt: 'Url', placeHolder: 'Url'});
-		// if (!url) {throw new Error("cancelled");} else if (!Validator.isURL(url)) {throw new Error("Not a valid url");};
-		// const onSaveCleaner = vscode.workspace.onDidSaveTextDocument(reloadAction);
-		// browserInstance = await PuppeteerBrowser.build(url, { onSaveCleaner });
-		// await browserInstance.start();
+		//Extract object props
+		for (let fileProp of scriptData) {
+
+			const prop:string[] = Object.keys(fileProp.var);
+			const $ = cheerio.load(file);
+			$('script').remove();
+
+			for (const varProp of prop) {
+				let value = fileProp.var[varProp];
+				$(`[$var_${varProp}]`).html(value);
+				$(`[$var_${varProp}]`).removeAttr(`$var_${varProp}`);
+				let modifiedHTML = $.html();
+
+				//Deal with direct variables
+
+				//Generate each file into folder
+				fs.writeFileSync(`${folderDir}/${fileProp.name}.html`, modifiedHTML);
+			}
+
+		}
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand(DOM_LAUNCH, async () => {

@@ -96,3 +96,13 @@ export const readFilePath = async () => {
     let path:any = vscode.workspace.workspaceFolders !== undefined ? await vscode.window.activeTextEditor?.document.uri.fsPath : null;
     if (!path) {throw new Error("Must have an active window");} else {return path;}
 };
+
+export const readFolderPath = async () => {
+    if(vscode.workspace.workspaceFolders !== undefined) {
+        console.log(vscode.workspace.workspaceFolders[0].uri);
+        let f = vscode.workspace.workspaceFolders[0].uri.fsPath; 
+        return f;
+    } else {
+        return null;
+    }     
+};
