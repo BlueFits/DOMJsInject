@@ -9,7 +9,8 @@ import * as parsePath from "parse-filepath";
 import commands from "./constants/commands";
 import templates from "./constants/templates";
 import { menu, ES6_TEMPLATE, VANILLA_TEMPLATE, PERS_COOKIE_TEMPLATE } from "./constants/menu";
-import { readFilePath, readFile, readHTML, readFolderPath } from "./utils";
+import { readFilePath, readFile, readHTML } from "./utils";
+import cdbMakePropTemp from "./constants/templates/cdb/cdb_make_prop_temp";
 
 const { DOM_LAUNCH, GEN_PERS_TEMPLATE, GEN_CDB_FILES } = commands;
 const { es6TemplateGen, vanillaTemplateGen, persCookieTemplateGen } = templates;
@@ -27,6 +28,18 @@ export async function activate(context: vscode.ExtensionContext) {
 	};
 
 	//Commands
+	context.subscriptions.push(vscode.commands.registerCommand("dom-js-inject.cdb_make_property", async () => {
+		vscode.window.showInformationMessage("Tada");
+
+		const currentlyOpenTabfilePath = await readFilePath();
+		const file: any = await readFile(currentlyOpenTabfilePath);
+
+		//analysis of file
+		
+
+		fs.appendFileSync(currentlyOpenTabfilePath, cdbMakePropTemp);
+	}));
+
 	context.subscriptions.push(vscode.commands.registerCommand(GEN_CDB_FILES, async () => {
 		const currentlyOpenTabfilePath = await readFilePath();
 		const file: any = await readFile(currentlyOpenTabfilePath);
@@ -34,25 +47,19 @@ export async function activate(context: vscode.ExtensionContext) {
 		const pathInfo =  parsePath(currentlyOpenTabfilePath);
 		const folderDir = `${pathInfo.dir}/${pathInfo.name}_files`;
 
-		//Extract object props
 		for (let fileProp of scriptData) {
 			const prop:string[] = fileProp && fileProp.var && Object.keys(fileProp.var);
 			const directProp: string[] = fileProp && fileProp.direct && Object.keys(fileProp.direct);
-			const $ = cheerio.load(file);
-			// const $original = cheerio.load(file);
+			const $ = cheerio.load(file, null, false);
 			$('script').remove();
-
 			let modifiedHTML:string | null = null;
-
 			if (!prop) {throw new Error("Must have a var property in object file");}
-
 			for (const varProp of prop) {
 				let value = fileProp.var[varProp];
 				$(`[$var_${varProp}]`).html(value);
 				$(`[$var_${varProp}]`).removeAttr(`$var_${varProp}`);
 				modifiedHTML = $.html();
 			}
-
 			if (directProp) {
 				for (const directPropName of directProp) {
 					let replace = "direct__" + directPropName;
@@ -60,20 +67,12 @@ export async function activate(context: vscode.ExtensionContext) {
 					modifiedHTML = modifiedHTML && modifiedHTML.replace(re, fileProp.direct[directPropName]);
 				}
 			}
-
-			//Compensate for cheerio bug 
-			modifiedHTML = modifiedHTML && modifiedHTML?.replace(/<head>/g, "");
-			modifiedHTML = modifiedHTML && modifiedHTML?.replace(/<\/head>/g, "");
-			modifiedHTML = modifiedHTML && modifiedHTML?.replace(/<html>/g, "");
-			modifiedHTML = modifiedHTML && modifiedHTML?.replace(/<\/html>/g, "");
-			modifiedHTML = modifiedHTML && modifiedHTML?.replace(/<body>/g, "");
-			modifiedHTML = modifiedHTML && modifiedHTML?.replace(/<\/body>/g, "");
-
 			if (!modifiedHTML) { console.log("Value is null"); return;};
 			if (!fs.existsSync(folderDir)) {fs.mkdirSync(folderDir);};
 			fs.writeFileSync(`${folderDir}/${fileProp.name}.html`, modifiedHTML);
-			vscode.window.showInformationMessage("Successfully generated files");
 		}
+
+		vscode.window.showInformationMessage("Successfully generated files");
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand(DOM_LAUNCH, async () => {

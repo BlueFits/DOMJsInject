@@ -17,7 +17,8 @@
   "activationEvents": [
     "onCommand:dom-js-inject.launch",
     "onCommand:dom-js-inject.gen_pers_template",
-    "onCommand:dom-js-inject.gen_cdb_files"
+    "onCommand:dom-js-inject.gen_cdb_files",
+    "onCommand:dom-js-inject.cdb_make_property"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -33,6 +34,10 @@
       {
         "command": "dom-js-inject.gen_cdb_files",
         "title": "Generate CDB Files"
+      },
+      {
+        "command": "dom-js-inject.cdb_make_property",
+        "title": "CDB Make Property"
       }
     ]
   },
