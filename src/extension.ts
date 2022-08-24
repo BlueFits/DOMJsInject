@@ -12,7 +12,7 @@ import { menu, ES6_TEMPLATE, VANILLA_TEMPLATE, PERS_COOKIE_TEMPLATE } from "./co
 import { readFilePath, readFile, readHTML } from "./utils";
 import cdbMakePropTemp from "./constants/templates/cdb/cdb_make_prop_temp";
 
-const { DOM_LAUNCH, GEN_PERS_TEMPLATE, GEN_CDB_FILES } = commands;
+const { DOM_LAUNCH, GEN_PERS_TEMPLATE, GEN_CDB_FILES, CDB_MAKE_PROP } = commands;
 const { es6TemplateGen, vanillaTemplateGen, persCookieTemplateGen } = templates;
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -28,16 +28,29 @@ export async function activate(context: vscode.ExtensionContext) {
 	};
 
 	//Commands
-	context.subscriptions.push(vscode.commands.registerCommand("dom-js-inject.cdb_make_property", async () => {
-		vscode.window.showInformationMessage("Tada");
-
+	context.subscriptions.push(vscode.commands.registerCommand(CDB_MAKE_PROP, async () => {
 		const currentlyOpenTabfilePath = await readFilePath();
 		const file: any = await readFile(currentlyOpenTabfilePath);
-
-		//analysis of file
-		
-
-		fs.appendFileSync(currentlyOpenTabfilePath, cdbMakePropTemp);
+		const txts = file.split(/;| /).filter((val: string) => (val.includes("$var_") || val.includes("direct__")));
+		const prop:any = { 
+			name: "", 
+			var: {}, 
+			direct: {} 
+		};
+		let varArg = ``;
+		let directArg = ``;
+		for (const txt of txts) {
+			if (txt[0] === "$") {
+				const prop = txt.slice(5) + ': "",';
+				varArg = varArg + (prop.trim() + " ");
+			} 
+			else if (txt[0] === "d") {
+				const prop = txt.slice(8) + ': "",';
+				directArg = directArg + (prop.trim()+ " ");
+			}
+		}
+		fs.appendFileSync(currentlyOpenTabfilePath, cdbMakePropTemp(varArg, directArg));
+		vscode.window.showInformationMessage("Successfully created props");
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand(GEN_CDB_FILES, async () => {
