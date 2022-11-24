@@ -15,7 +15,7 @@ export default class PuppeteerBrowser {
 		}
     };
 
-	static async build(url: string, { onSaveCleaner }: any) {
+	static async build(url: string, { watcher }: any) {
 		const settings = vscode.workspace.getConfiguration('vscode-devtools-for-chrome');
         const pathToChrome = settings.get('chromePath') as string || getPathToChrome();
 		const currentlyOpenTabfilePath = await readFilePath();
@@ -37,8 +37,8 @@ export default class PuppeteerBrowser {
 			if(page) {page.close();};
 		 });
 
-		 browser.on("disconnected", async () => {
-			 onSaveCleaner.dispose();
+		browser.on("disconnected", async () => {
+			 watcher.close();
 		 });
 		//Target first tab
 		const pages = await browser.pages();

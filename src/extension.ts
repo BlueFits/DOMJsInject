@@ -4,7 +4,7 @@ import Validator from "validator";
 import * as fs from "fs";
 import * as cheerio from "cheerio";
 import * as parsePath from "parse-filepath";
-
+import * as chokidar from "chokidar";
 
 import commands from "./constants/commands";
 import templates from "./constants/templates";
@@ -15,28 +15,21 @@ import cdbMakePropTemp from "./constants/templates/cdb/cdb_make_prop_temp";
 const { DOM_LAUNCH, GEN_PERS_TEMPLATE, GEN_CDB_FILES, CDB_MAKE_PROP } = commands;
 const { es6TemplateGen, vanillaTemplateGen, persCookieTemplateGen } = templates;
 
-export async function activate(context: vscode.ExtensionContext) {
+export async function activate(context: any) {
 
 	let browserInstance: any = null;
 
 	//Methods
-	const reloadAction = async (e: any) => {
-		if (vscode.window.activeTextEditor?.document.uri.fsPath === browserInstance.getFilePath()) {
-			await browserInstance.reloadTab();
-			await browserInstance.render();
-		}
+	const reloadAction = async () => {
+		await browserInstance.reloadTab();
+		await browserInstance.render();
 	};
 
 	//Commands
-	context.subscriptions.push(vscode.commands.registerCommand(CDB_MAKE_PROP, async () => {
+	context.subscriptions.push((vscode as any).commands.registerCommand(CDB_MAKE_PROP, async () => {
 		const currentlyOpenTabfilePath = await readFilePath();
 		const file: any = await readFile(currentlyOpenTabfilePath);
 		const txts = file.split(/;| /).filter((val: string) => (val.includes("$var_") || val.includes("direct__")));
-		const prop:any = { 
-			name: "", 
-			var: {}, 
-			direct: {} 
-		};
 		let varArg = ``;
 		let directArg = ``;
 		for (const txt of txts) {
@@ -50,10 +43,10 @@ export async function activate(context: vscode.ExtensionContext) {
 			}
 		}
 		fs.appendFileSync(currentlyOpenTabfilePath, cdbMakePropTemp(varArg, directArg));
-		vscode.window.showInformationMessage("Successfully created props");
+		(vscode as any).window.showInformationMessage("Successfully created props");
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand(GEN_CDB_FILES, async () => {
+	context.subscriptions.push((vscode as any).commands.registerCommand(GEN_CDB_FILES, async () => {
 		const currentlyOpenTabfilePath = await readFilePath();
 		const file: any = await readFile(currentlyOpenTabfilePath);
 		const scriptData: any = eval(readHTML(file).scriptTxt);
@@ -63,7 +56,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		for (let fileProp of scriptData) {
 			const prop:string[] = fileProp && fileProp.var && Object.keys(fileProp.var);
 			const directProp: string[] = fileProp && fileProp.direct && Object.keys(fileProp.direct);
-			const $ = cheerio.load(file, null, false);
+			const $ = cheerio.load(file, {});
 			$('script').remove();
 			let modifiedHTML:string | null = null;
 			if (!prop) {throw new Error("Must have a var property in object file");}
@@ -85,21 +78,27 @@ export async function activate(context: vscode.ExtensionContext) {
 			fs.writeFileSync(`${folderDir}/${fileProp.name}.html`, modifiedHTML);
 		}
 
-		vscode.window.showInformationMessage("Successfully generated files");
+		(vscode as any).window.showInformationMessage("Successfully generated files");
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand(DOM_LAUNCH, async () => {
-		let url = await vscode.window.showInputBox({prompt: 'Url', placeHolder: 'Url'});
+	context.subscriptions.push((vscode as any).commands.registerCommand(DOM_LAUNCH, async () => {
+		let url = await (vscode as any).window.showInputBox({prompt: 'Url', placeHolder: 'Url'});
 		if (!url) {throw new Error("cancelled");} else if (!Validator.isURL(url)) {throw new Error("Not a valid url");};
-		const onSaveCleaner = vscode.workspace.onDidSaveTextDocument(reloadAction);
-		browserInstance = await PuppeteerBrowser.build(url, { onSaveCleaner });
+		const watcher = chokidar.watch(await readFilePath(), {ignored: /^\./, persistent: true});
+        watcher
+		.on('change', async function(path: any) {
+			reloadAction();
+			console.log('File', path, 'has been updated');
+		})
+		.on('error', function(error: any) {console.error('Error happened', error);});
+		browserInstance = await PuppeteerBrowser.build(url, { watcher });
 		await browserInstance.start();
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand(GEN_PERS_TEMPLATE, async () => {
+	context.subscriptions.push((vscode as any).commands.registerCommand(GEN_PERS_TEMPLATE, async () => {
 		let templateRender: any = null;
-		const selection = await vscode.window.showQuickPick(menu, { matchOnDetail: true });
-		let persNum = await vscode.window.showInputBox({prompt: 'Please enter story number', placeHolder: 'story number'});
+		const selection = await (vscode as any).window.showQuickPick(menu, { matchOnDetail: true });
+		let persNum = await (vscode as any).window.showInputBox({prompt: 'Please enter story number', placeHolder: 'story number'});
 		if (!persNum) {throw new Error("cancelled");};
 		switch (selection?.label) {
 			case VANILLA_TEMPLATE:
@@ -112,7 +111,7 @@ export async function activate(context: vscode.ExtensionContext) {
 				templateRender = await persCookieTemplateGen(persNum);
 		}
 		fs.writeFile(await readFilePath(), templateRender, (err: any) => {throw new Error(err);});
-		vscode.window.showInformationMessage(`Succesfully created generated template`);
+		(vscode as any).window.showInformationMessage(`Succesfully created generated template`);
 	}));
 }
 
