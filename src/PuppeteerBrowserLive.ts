@@ -16,8 +16,8 @@ export default class PuppeteerBrowserLive extends PuppeteerBrowser {
 		const settings = vscode.workspace.getConfiguration('vscode-devtools-for-chrome');
         const pathToChrome = settings.get('chromePath') as string || getPathToChrome();
 		const currentlyOpenTabfilePath = await readFilePath();
-		console.log(path.resolve(await readFolderPath() + "/dist/bundle.js"));
-		const jsPath = path.resolve(await readFolderPath() + "/dist/bundle.js");
+		console.log(path.resolve(await readFilePath()));
+		const jsPath = path.resolve(await readFilePath());
 		
 		if (!pathToChrome || !existsSync(pathToChrome)) {
             vscode.window.showErrorMessage('Chrome was not  found. Chrome must be installed for this extension to function. If you have Chrome installed at a custom location you can specify it in the \'chromePath\' setting.');
