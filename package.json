@@ -3,7 +3,7 @@
   "displayName": "Dom JS Inject",
   "publisher": "ChristianRojas",
   "description": "Inject code to webpages to see the changes made in real time",
-  "version": "2.1.1",
+  "version": "2.1.3",
   "repository": {
     "type": "git",
     "url": "github.com/BlueFits/DOMJsInject"
@@ -16,6 +16,7 @@
   ],
   "activationEvents": [
     "onCommand:dom-js-inject.launch",
+    "onCommand:dom-js-inject.live",
     "onCommand:dom-js-inject.gen_pers_template",
     "onCommand:dom-js-inject.gen_cdb_files",
     "onCommand:dom-js-inject.cdb_make_property"
@@ -26,6 +27,10 @@
       {
         "command": "dom-js-inject.launch",
         "title": "Launch JS Inject"
+      },
+      {
+        "command": "dom-js-inject.live",
+        "title": "Launch JS Live"
       },
       {
         "command": "dom-js-inject.gen_pers_template",

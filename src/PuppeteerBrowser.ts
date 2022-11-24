@@ -3,8 +3,8 @@ import { readHTML, getPathToChrome, existsSync, readFile, readFilePath } from ".
 import * as pupeteer from 'puppeteer';
 
 export default class PuppeteerBrowser {
-	private page: any;
-	private currentlyOpenTabfilePath: any;
+	protected page: any;
+	protected currentlyOpenTabfilePath: any;
 
     constructor (page: any, currentlyOpenTabfilePath: any) {
         if (typeof page === 'undefined') {
@@ -43,7 +43,7 @@ export default class PuppeteerBrowser {
 		//Target first tab
 		const pages = await browser.pages();
 		const page = pages[0];
-		await page.goto(url, { waitUntil: 'load' });
+		await page.goto(url, { waitUntil: 'load', timeout: 0 });
 
         return new PuppeteerBrowser(page, currentlyOpenTabfilePath);
     };

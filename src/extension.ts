@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import PuppeteerBrowser from './PuppeteerBrowser';
+import PuppeteerBrowserLive from './PuppeteerBrowserLive';
 import Validator from "validator";
 import * as fs from "fs";
 import * as cheerio from "cheerio";
@@ -12,7 +13,7 @@ import { menu, ES6_TEMPLATE, VANILLA_TEMPLATE, PERS_COOKIE_TEMPLATE } from "./co
 import { readFilePath, readFile, readHTML } from "./utils";
 import cdbMakePropTemp from "./constants/templates/cdb/cdb_make_prop_temp";
 
-const { DOM_LAUNCH, GEN_PERS_TEMPLATE, GEN_CDB_FILES, CDB_MAKE_PROP } = commands;
+const { DOM_LAUNCH, GEN_PERS_TEMPLATE, GEN_CDB_FILES, CDB_MAKE_PROP, DOM_LIVE } = commands;
 const { es6TemplateGen, vanillaTemplateGen, persCookieTemplateGen } = templates;
 
 export async function activate(context: any) {
@@ -92,6 +93,20 @@ export async function activate(context: any) {
 		})
 		.on('error', function(error: any) {console.error('Error happened', error);});
 		browserInstance = await PuppeteerBrowser.build(url, { watcher });
+		await browserInstance.start();
+	}));
+
+	context.subscriptions.push((vscode as any).commands.registerCommand(DOM_LIVE, async () => {
+		let url = await (vscode as any).window.showInputBox({prompt: 'Url', placeHolder: 'Url'});
+		if (!url) {throw new Error("cancelled");} else if (!Validator.isURL(url)) {throw new Error("Not a valid url");};
+		const watcher = chokidar.watch(await readFilePath(), {ignored: /^\./, persistent: true});
+        watcher
+		.on('change', async function(path: any) {
+			reloadAction();
+			console.log('File', path, 'has been updated');
+		})
+		.on('error', function(error: any) {console.error('Error happened', error);});
+		browserInstance = await PuppeteerBrowserLive.build(url, { watcher });
 		await browserInstance.start();
 	}));
 
