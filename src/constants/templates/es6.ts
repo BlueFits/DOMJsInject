@@ -8,12 +8,10 @@ export default `
 <script>
     window.persDOM_INJECT_SCRIPTChangesApplied = false;
 
-    const PERS_STORY = "pers-DOM_INJECT_SCRIPT";
-
     const persDOM_INJECT_SCRIPTChangesToApply = async () => {
         
         const tryCatch = (fun, block) => {
-            try {fun();} catch (err) {console.trace('%c ' + PERS_STORY + ' error in ' + block + ': ' + err, 'background: #222; color: #AD7150');}
+            try {fun();} catch (err) {console.trace('%c ' + PERS-DOM_INJECT_SCRIPT + ' error in ' + block + ': ' + err, 'background: #222; color: #AD7150');}
         }
 
         const siteDefaults = new Promise ((res) => {
