@@ -69,7 +69,7 @@ export async function activate(context: any) {
 				}
 			}
 
-			fs.writeFileSync(`${folderDir}`, "const copy = " + util.inspect(copy), "utf-8");
+			fs.writeFileSync(`${folderDir}`, "const copy = " + util.inspect(copy));
 			(vscode as any).window.showInformationMessage("Successfully generated copy");
 		} catch (err) {
 			throw err;
