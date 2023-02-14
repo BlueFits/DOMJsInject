@@ -15,6 +15,7 @@
     "Other"
   ],
   "activationEvents": [
+    "onCommand:dom-js-inject.get_copy",
     "onCommand:dom-js-inject.launch",
     "onCommand:dom-js-inject.live",
     "onCommand:dom-js-inject.gen_pers_template",
@@ -24,6 +25,10 @@
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
+      {
+        "command": "dom-js-inject.get_copy",
+        "title": "Generate Copy"
+      },
       {
         "command": "dom-js-inject.launch",
         "title": "Launch JS Inject"
@@ -81,6 +86,7 @@
     "@types/validator": "^13.7.2",
     "cheerio": "^1.0.0-rc.10",
     "chokidar": "^3.5.3",
+    "mammoth": "^1.5.1",
     "parse-filepath": "^1.0.2",
     "puppeteer": "^13.7.0",
     "validator": "^13.7.0"
