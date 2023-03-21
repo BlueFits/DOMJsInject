@@ -33,7 +33,6 @@ export async function activate(context: any) {
 
 	context.subscriptions.push((vscode as any).commands.registerCommand(GEN_COPY, async () => {
 		try {
-
 			const currentlyOpenTabfilePath = await readFilePath();
 			const pathInfo = parsePath(currentlyOpenTabfilePath);
 			const folderDir = `${pathInfo.dir}/copy.js`;
@@ -109,7 +108,8 @@ export async function activate(context: any) {
 			const $ = cheerio.load(file, {});
 			$('script').remove();
 			let modifiedHTML: string | null = null;
-			if (!prop) { throw new Error("Must have a var property in object file"); }
+			// if (!prop) { throw new Error("Must have a var property in object file"); }
+			if (!directProp) { throw new Error("Must have a direct property in object file"); }
 			for (const varProp of prop) {
 				let value = fileProp.var[varProp];
 				$(`[$var_${varProp}]`).html(value);
