@@ -3,7 +3,7 @@
   "displayName": "Dom JS Inject",
   "publisher": "ChristianRojas",
   "description": "Inject code to webpages to see the changes made in real time",
-  "version": "2.1.6",
+  "version": "2.1.7",
   "repository": {
     "type": "git",
     "url": "github.com/BlueFits/DOMJsInject"
