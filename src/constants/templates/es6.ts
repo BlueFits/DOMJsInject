@@ -9,8 +9,8 @@ export default `
     window.persDOM_INJECT_SCRIPTChangesApplied = false;
 
     const persDOM_INJECT_SCRIPTChangesToApply = async () => {
-    
-                const orig_$ = $;
+        /* Used for TAVC */
+        const orig_$ = $;
         $ = (param, options = { isImportant: false }) => {
             $.selectors = $.important && $.important.length > 0 ? [...$.important] : [];
             $.important = $.important && $.important.length > 0 ? [...$.important] : [];
@@ -28,7 +28,7 @@ export default `
         }
         
         const tryCatch = (fun, block) => {
-            try {fun();} catch (err) {console.trace('%c ' + PERS-DOM_INJECT_SCRIPT + ' error in ' + block + ': ' + err, 'background: #222; color: #AD7150');}
+            try {fun();} catch (err) {console.trace('%c ' + 'PERS-DOM_INJECT_SCRIPT' + ' error in ' + block + ': ' + err, 'background: #222; color: #AD7150');}
         }
 
         const siteDefaults = new Promise ((res) => {
