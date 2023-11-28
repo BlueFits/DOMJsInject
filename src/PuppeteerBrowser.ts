@@ -43,7 +43,7 @@ export default class PuppeteerBrowser {
 		//Target first tab
 		const pages = await browser.pages();
 		const page = pages[0];
-		await page.goto(url, { waitUntil: 'load', timeout: 0 });
+		await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 15 * 1000 });
 
         return new PuppeteerBrowser(page, currentlyOpenTabfilePath);
     };
