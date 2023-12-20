@@ -5,13 +5,15 @@ import * as pupeteer from 'puppeteer';
 export default class PuppeteerBrowser {
 	protected page: any;
 	protected currentlyOpenTabfilePath: any;
+	protected waitUntilValue: string | undefined;
 
-    constructor (page: any, currentlyOpenTabfilePath: any) {
+    constructor (page: any, currentlyOpenTabfilePath: any, waitUntilValue?: string) {
         if (typeof page === 'undefined') {
             throw new Error('Cannot be called directly');
         } else {
 			this.page = page;
 			this.currentlyOpenTabfilePath = currentlyOpenTabfilePath;
+			this.waitUntilValue = waitUntilValue;
 		}
     };
 
@@ -19,6 +21,7 @@ export default class PuppeteerBrowser {
 		const settings = vscode.workspace.getConfiguration('vscode-devtools-for-chrome');
         const pathToChrome = settings.get('chromePath') as string || getPathToChrome();
 		const currentlyOpenTabfilePath = await readFilePath();
+		const waitUntilValue = "domcontentloaded";
 		
 		if (!pathToChrome || !existsSync(pathToChrome)) {
             vscode.window.showErrorMessage('Chrome was not  found. Chrome must be installed for this extension to function. If you have Chrome installed at a custom location you can specify it in the \'chromePath\' setting.');
@@ -43,9 +46,9 @@ export default class PuppeteerBrowser {
 		//Target first tab
 		const pages = await browser.pages();
 		const page = pages[0];
-		await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 15 * 1000 });
+		await page.goto(url, { waitUntil: waitUntilValue, timeout: 15 * 1000 });
 
-        return new PuppeteerBrowser(page, currentlyOpenTabfilePath);
+        return new PuppeteerBrowser(page, currentlyOpenTabfilePath, waitUntilValue);
     };
 
 	public getFilePath(): string {
@@ -89,7 +92,7 @@ export default class PuppeteerBrowser {
 	};
 
 	public async reloadTab () {
-		await this.page.reload({ waitUntil: 'load' });
+		await this.page.reload({ waitUntil: this.waitUntilValue });
 	};
 	//Used in render to create network fetching scripts or links
 	public async createAsyncTag (tag: any, prop: string, block: string) {

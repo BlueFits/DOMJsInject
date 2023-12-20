@@ -88,7 +88,7 @@
     "chokidar": "^3.5.3",
     "mammoth": "^1.5.1",
     "parse-filepath": "^1.0.2",
-    "puppeteer": "^13.7.0",
+    "puppeteer": "21.6.1",
     "validator": "^13.7.0"
   }
 }
