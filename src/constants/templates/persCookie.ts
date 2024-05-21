@@ -12,6 +12,8 @@ export default `
  
 
 <script>
+  //@PCT=URL;
+
 
   window.persDOM_INJECT_SCRIPTChangesApplied = false;
 

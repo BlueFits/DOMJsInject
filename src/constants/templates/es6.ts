@@ -6,6 +6,8 @@ export default `
 </style>
 
 <script>
+    //@PCT=URL;
+
     window.persDOM_INJECT_SCRIPTChangesApplied = false;
 
     const persDOM_INJECT_SCRIPTChangesToApply = async () => {

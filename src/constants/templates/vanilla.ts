@@ -4,26 +4,11 @@ export default `
 </style>
 
 <script>
+    //@PCT=URL;
+    
     window.persDOM_INJECT_SCRIPTChangesApplied = false;
 
     function persDOM_INJECT_SCRIPTChangesToApply() {
-        /* Used for TAVC */
-        const orig_$ = $;
-        $ = (param, options = { isImportant: false }) => {
-            $.selectors = $.important && $.important.length > 0 ? [...$.important] : [];
-            $.important = $.important && $.important.length > 0 ? [...$.important] : [];
-            $.selectors.push({
-                selector: param,
-                length: orig_$(param).length,
-            });
-            if (options.isImportant) {
-                $.important.push({
-                    selector: param,
-                    length: orig_$(param).length,
-                });
-            }
-            return orig_$(param);
-        }
         // Insert code here 
     }
 
